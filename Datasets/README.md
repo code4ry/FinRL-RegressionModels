@@ -13,6 +13,8 @@ The S&P 500 is a stock market index that measures the performance of 500 large c
 
 Each dataset has been downloaded from the Yahoo-Finance Website. Thankfully, this results in the dataset coming pre-parsed without any need to organize it some unique manner.
 
+When visualizing our data set, we decided to compare our independent variables to the stocks adjusted prices at the end of each day. We decided to do this, because of the fact that the adjusted close prices account for corporate actions. This can include dividends, stock splits, and mergers. Therefore, having our model utilize the adjusted close pricces, it should provide a more accurate reflection of the stock's value.
+
 # Resources
 Dukascopy-node:
     https://www.dukascopy-node.app/
