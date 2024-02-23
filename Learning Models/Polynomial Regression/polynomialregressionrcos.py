@@ -14,21 +14,28 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures
 
 import numpy as np
 import math
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
 
-data = pd.read_csv("/content/sandp500.csv")
-headers = data.head(0)
+df = pd.read_csv("/content/dji.csv")
+headers = df.head(0)
 print(headers)
+df = df.dropna()
+df = df.dropna(axis=1)
+df= df.dropna(how='all')
+numRows = df.shape[0]
 
-xDate = data[['Date']]
-xOpen = data[['Open']]
-xHigh = data[['High']]
-xLow = data[['Low']]
-xVol = data[['Volume']]
+xDate = (df[['Date']]).T
+xOpen = (df[['Open']]).T
+xHigh = (df[['High']]).T
+xLow = (df[['Low']]).T
+xVol = (df[['Volume']]).T
 
-y = data[['Adj Close']]
+y = df[['Adj Close']]
 
 #Visualizing open prices to adjusted close price
 plt.scatter(xOpen, y)
@@ -59,6 +66,39 @@ plt.title('Comparison 3')
 plt.show()
 
 """After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
-Our models visualizes the stock prices from 2022-01-03 to 2023-12-29.
+Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
 
 """
+
+x = df[['Open']] #independent variable
+x2 = df['Low'] #second independent variable
+y = df[['Adj Close']] #dependent variable
+
+xMean = pd.DataFrame(columns=['Mean'])
+for i in range(0, len(df['Open']), 7):
+    meanVal = df['Open'].iloc[i:i+7].mean()
+    xMean.loc[len(xMean)] = [meanVal]
+
+yMean = pd.DataFrame(columns=['Adj Close'])
+for i in range(0, len(df['Adj Close']), 7):
+    meanVal = df['Open'].iloc[i:i+7].mean()
+    yMean.loc[len(yMean)] = [meanVal]
+
+#we decided to use opening price, lowest price, and adjusted price for our regression models
+#xTrain, xTest, yTrain, yTest = train_test_split(xMean, yMean, test_size=0.3, random_state=42)
+#BIC = numRows*log(residual sum of squares/numRows) + k*log(numRows)
+
+poly = PolynomialFeatures(degree=7)
+X_poly = poly.fit_transform(xMean)
+
+poly.fit(X_poly, yMean)
+lin2 = LinearRegression()
+lin2.fit(X_poly, yMean)
+
+plt.scatter(xMean, yMean)
+
+plt.plot(xMean, lin2.predict(poly.fit_transform(xMean)), color='red')
+plt.xlabel('Open')
+plt.ylabel('Adj Close')
+
+plt.show()
