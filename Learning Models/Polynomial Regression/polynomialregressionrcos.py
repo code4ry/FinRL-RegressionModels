@@ -18,7 +18,9 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import math
 
-data = pd.read_csv("/content/sandp500.csv")
+# make sure to chan
+url = 'https://github.com/code4ry/FinRL-RegressionModels/blob/main/Datasets/sandp500.csv'
+data = pd.read_csv('FinRL-RegressionModels\Datasets\dji.csv')
 headers = data.head(0)
 print(headers)
 

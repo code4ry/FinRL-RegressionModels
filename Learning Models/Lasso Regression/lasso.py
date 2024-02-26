@@ -1,95 +1,60 @@
-from collections import deque
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Lasso
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
+# Read the dataset from CSV file
+df = pd.read_csv("Datasets\sandp500.csv")
 
-def BFS(a, b, target):
+# Convert the 'Date' column to datetime type
+df['Date'] = pd.to_datetime(df['Date'])
 
-	m = {}
-	isSolvable = False
-	path = []
+# Get unique months from the dataset
+unique_months = df['Date'].dt.month.unique()
+print("Unique Months in the Dataset:")
+print(unique_months)
 
+# Ask the user to input the month they want to analyze
+selected_month = int(input("Enter the month you want to analyze (1-12): "))
 
-	q = deque()
+# Filter the dataset for the selected month
+df_selected_month = df[df['Date'].dt.month == selected_month]
 
-	q.append((0, 0))
+# Split the dataset into features (X) and target variable (y)
+X = df_selected_month.drop(columns=['Date', 'Close'])  # Use all columns except 'Date' and 'Close' as features
+y = df_selected_month['Close']  # Predict the 'Close' price
 
-	while (len(q) > 0):
-		u = q.popleft()# If this state is already visited
-		if ((u[0], u[1]) in m):
-			continue
-		if ((u[0] > a or u[1] > b or
-			u[0] < 0 or u[1] < 0)):
-			continue
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-		# Filling the vector for constructing
-		# the solution path
-		path.append([u[0], u[1]])
+# Scale the features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
-		# Marking current state as visited
-		m[(u[0], u[1])] = 1
+# Train a Lasso regression model
+lasso = Lasso(alpha=0.1)  # You can adjust the alpha parameter as needed
+lasso.fit(X_train_scaled, y_train)
 
-		# If we reach solution state, put ans=1
-		if (u[0] == target or u[1] == target):
-			isSolvable = True
+# Make predictions
+y_pred = lasso.predict(X_test_scaled)
 
-			if (u[0] == target):
-				if (u[1] != 0):
+# Compare predictions with actual values
+mse = mean_squared_error(y_test, y_pred)
+print(f"Mean Squared Error: {mse}")
 
-					# Fill final state
-					path.append([u[0], 0])
-			else:
-				if (u[0] != 0):
-
-					# Fill final state
-					path.append([0, u[1]])
-
-			# Print the solution path
-			sz = len(path)
-			for i in range(sz):
-				print("(", path[i][0], ",",
-					path[i][1], ")")
-			break
-
-		# If we have not reached final state
-		# then, start developing intermediate
-		# states to reach solution state
-		q.append([u[0], b]) # Fill Jug2
-		q.append([a, u[1]]) # Fill Jug1
-
-		for ap in range(max(a, b) + 1):
-
-			# Pour amount ap from Jug2 to Jug1
-			c = u[0] + ap
-			d = u[1] - ap
-
-			# Check if this state is possible or not
-			if (c == a or (d == 0 and d >= 0)):
-				q.append([c, d])
-
-			# Pour amount ap from Jug 1 to Jug2
-			c = u[0] - ap
-			d = u[1] + ap
-
-			# Check if this state is possible or not
-			if ((c == 0 and c >= 0) or d == b):
-				q.append([c, d])
-
-		# Empty Jug2
-		q.append([a, 0])
-
-		# Empty Jug1
-		q.append([0, b])
-
-	# No, solution exists if ans=0
-	if (not isSolvable):
-		print("No solution")
-
-
-# Driver code
-if __name__ == '__main__':
-
-	Jug1, Jug2, target = 3, 5, 4
-	print("Path from initial state "
-		"to solution state ::")
-
-	BFS(Jug1, Jug2, target)
-
+# Plot actual vs. predicted values
+plt.figure(figsize=(10, 6))
+plt.plot(y_test.index, y_test.values, label='Actual Close Price', color='blue')
+plt.plot(y_test.index, y_pred, label='Predicted Close Price', color='red')
+plt.xlabel('Date')
+plt.ylabel('Close Price')
+plt.title(f'Actual vs. Predicted Close Price for Month {selected_month}')
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
