@@ -15,13 +15,14 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
 
 import numpy as np
 import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
-df = pd.read_csv("/content/dji.csv")
+df = pd.read_csv("/content/sandp500.csv")
 headers = df.head(0)
 print(headers)
 df = df.dropna()
@@ -29,11 +30,12 @@ df = df.dropna(axis=1)
 df= df.dropna(how='all')
 numRows = df.shape[0]
 
-xDate = (df[['Date']]).T
-xOpen = (df[['Open']]).T
-xHigh = (df[['High']]).T
-xLow = (df[['Low']]).T
-xVol = (df[['Volume']]).T
+xDate = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
+xOpen = df[['Open']]
+xHigh = df[['High']]
+xLow = df[['Low']]
+xVol = df[['Volume']]
+xClose = df[['Close']]
 
 y = df[['Adj Close']]
 
@@ -62,7 +64,21 @@ plt.show()
 plt.scatter(xVol, y)
 plt.xlabel('Stock Volume')
 plt.ylabel('Adjusted Close Prices')
-plt.title('Comparison 3')
+plt.title('Comparison 4')
+plt.show()
+
+#Visualizing open price per day
+plt.scatter(xDate, xOpen)
+plt.xlabel('Date')
+plt.ylabel('Opening price')
+plt.title('Comparison 5')
+plt.show()
+
+#Visualizing closing price per day
+plt.scatter(xDate, xClose)
+plt.xlabel('Date')
+plt.ylabel('Closing price')
+plt.title('Comparison 6')
 plt.show()
 
 """After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
@@ -70,35 +86,30 @@ Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both d
 
 """
 
+#Splitting for train test
+X = df[['Open', 'High', 'Low']]
+xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
+
 x = df[['Open']] #independent variable
 x2 = df['Low'] #second independent variable
 y = df[['Adj Close']] #dependent variable
 
-xMean = pd.DataFrame(columns=['Mean'])
-for i in range(0, len(df['Open']), 7):
-    meanVal = df['Open'].iloc[i:i+7].mean()
-    xMean.loc[len(xMean)] = [meanVal]
+predictedValue = pd.DataFrame(columns=['Adj Close'])
+#for i in range(0, len(df['Date']), 7):
+scaler = StandardScaler()
+x_train_scaler = scaler.fit_transform(xTrain)
+x_test_scaler = scaler.transform(xTest)
 
-yMean = pd.DataFrame(columns=['Adj Close'])
-for i in range(0, len(df['Adj Close']), 7):
-    meanVal = df['Open'].iloc[i:i+7].mean()
-    yMean.loc[len(yMean)] = [meanVal]
+lin = LinearRegression()
 
-#we decided to use opening price, lowest price, and adjusted price for our regression models
-#xTrain, xTest, yTrain, yTest = train_test_split(xMean, yMean, test_size=0.3, random_state=42)
-#BIC = numRows*log(residual sum of squares/numRows) + k*log(numRows)
+poly = PolynomialFeatures(degree=6)
+x_poly_train = poly.fit_transform(x_train_scaler)
+x_test_poly = poly.transform(x_train_scaler)
+poly.fit(x_poly_train, yTrain)
+lin.fit(x_poly_train, yTrain)
 
-poly = PolynomialFeatures(degree=7)
-X_poly = poly.fit_transform(xMean)
+yPred = lin.predict(x_test_poly)
+mean_absolute_error(yTrain, yPred)
 
-poly.fit(X_poly, yMean)
-lin2 = LinearRegression()
-lin2.fit(X_poly, yMean)
-
-plt.scatter(xMean, yMean)
-
-plt.plot(xMean, lin2.predict(poly.fit_transform(xMean)), color='red')
-plt.xlabel('Open')
-plt.ylabel('Adj Close')
-
-plt.show()
+yPredTrain = lin.predict(x_poly_train)
+mean_absolute_error(yTrain, yPredTrain)
