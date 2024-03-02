@@ -81,7 +81,8 @@ plt.ylabel('Closing price')
 plt.title('Comparison 6')
 plt.show()
 
-"""After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
+"""
+After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
 Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
 
 """
