@@ -29,13 +29,15 @@ df = df.dropna()
 df = df.dropna(axis=1)
 df= df.dropna(how='all')
 numRows = df.shape[0]
+df['Date'] = pd.to_datetime(df['Date'])
 
-xDate = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
+xDate = df['Date']
 xOpen = df[['Open']]
 xHigh = df[['High']]
 xLow = df[['Low']]
 xVol = df[['Volume']]
 xClose = df[['Close']]
+
 
 y = df[['Adj Close']]
 
@@ -81,8 +83,7 @@ plt.ylabel('Closing price')
 plt.title('Comparison 6')
 plt.show()
 
-"""
-After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
+"""After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
 Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
 
 """
@@ -91,12 +92,6 @@ Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both d
 X = df[['Open', 'High', 'Low']]
 xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
 
-x = df[['Open']] #independent variable
-x2 = df['Low'] #second independent variable
-y = df[['Adj Close']] #dependent variable
-
-predictedValue = pd.DataFrame(columns=['Adj Close'])
-#for i in range(0, len(df['Date']), 7):
 scaler = StandardScaler()
 x_train_scaler = scaler.fit_transform(xTrain)
 x_test_scaler = scaler.transform(xTest)
@@ -105,12 +100,16 @@ lin = LinearRegression()
 
 poly = PolynomialFeatures(degree=6)
 x_poly_train = poly.fit_transform(x_train_scaler)
-x_test_poly = poly.transform(x_train_scaler)
+x_poly_test = poly.transform(x_test_scaler)
 poly.fit(x_poly_train, yTrain)
 lin.fit(x_poly_train, yTrain)
 
-yPred = lin.predict(x_test_poly)
-mean_absolute_error(yTrain, yPred)
-
 yPredTrain = lin.predict(x_poly_train)
-mean_absolute_error(yTrain, yPredTrain)
+meanErrorTrain = mean_absolute_error(yTrain, yPredTrain)
+
+yPredTest = lin.predict(x_poly_test)
+meanErrorTest = mean_absolute_error(yTest, yPredTest)
+
+
+print(meanErrorTrain)
+print(meanErrorTest)
