@@ -131,11 +131,10 @@ ridge = Ridge(alpha=0.1)
 ridge.fit(xTrain, yTrain)
 
 yPred = ridge.predict(xTest)
+yPred_Train = ridge.predict(xTrain)
 
-mse = mean_squared_error(yTest, yPred)
+mse_test = mean_squared_error(yTest, yPred)
+mse_train = mean_squared_error(yTrain, yPred_Train)
 
-print('MSE: ', mse)
-
-rSquared = r2_score(yTest, yPred)
-
-print('R-squared: ', rSquared)
+print('MSE Test: ', mse_test)
+print('MSE Train: ', mse_train)
