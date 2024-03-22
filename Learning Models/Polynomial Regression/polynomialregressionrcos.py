@@ -98,7 +98,28 @@ x_test_scaler = scaler.transform(xTest)
 
 lin = LinearRegression()
 
-poly = PolynomialFeatures(degree=6)
+min_error = 999999
+optimalDegree = 1
+for degree in range(1, 30):
+  poly_features = PolynomialFeatures(degree=degree)
+  x_poly_train = poly_features.fit_transform(x_train_scaler)
+  x_poly_test = poly_features.transform(x_test_scaler)
+
+  model = LinearRegression()
+  model.fit(x_poly_train, yTrain)
+
+  y_pred_train = model.predict(x_poly_train)
+  error_train = mean_absolute_error(yTrain, y_pred_train)
+
+  y_pred_test = model.predict(x_poly_test)
+  error_test = mean_absolute_error(yTest, y_pred_test)
+
+  if error_test < min_error:
+      min_error = error_test
+      optimalDegree = degree
+
+print(optimalDegree)
+poly = PolynomialFeatures(degree=optimalDegree)
 x_poly_train = poly.fit_transform(x_train_scaler)
 x_poly_test = poly.transform(x_test_scaler)
 poly.fit(x_poly_train, yTrain)
