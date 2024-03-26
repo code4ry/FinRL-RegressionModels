@@ -28,3 +28,4 @@ ln(pi/(1-pi)) = Beta_0 + Beta_1*X_1 + … + B_k*K_k
 **Milestone 3:**
 
 03/01: This week, I was able to train test and split my data for building the initial model. However, I am experimenting with pandas Time Series, trying to understand and implement the advantages of using Time Series to train test and split my data. Otherwise, the preparation of my data will need more time.
+
