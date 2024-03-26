@@ -115,8 +115,8 @@ for degree in range(1, 30):
   error_test = mean_absolute_error(yTest, y_pred_test)
 
   if error_test < min_error:
-      min_error = error_test
-      optimalDegree = degree
+    min_error = error_test
+    optimalDegree = degree
 
 print(optimalDegree)
 poly = PolynomialFeatures(degree=optimalDegree)
