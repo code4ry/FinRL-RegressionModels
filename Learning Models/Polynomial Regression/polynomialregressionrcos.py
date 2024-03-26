@@ -13,9 +13,11 @@ from pandas import DataFrame
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
+
 
 import numpy as np
 import math
@@ -98,27 +100,37 @@ x_test_scaler = scaler.transform(xTest)
 
 lin = LinearRegression()
 
-min_error = 999999
 optimalDegree = 1
-for degree in range(1, 30):
+rmses = [];
+degrees = np.arange(1, 60)
+min_rmse, min_deg = 99999999, 0
+
+
+for degree in degrees:
   poly_features = PolynomialFeatures(degree=degree)
-  x_poly_train = poly_features.fit_transform(x_train_scaler)
-  x_poly_test = poly_features.transform(x_test_scaler)
+  xPolyTrain = poly_features.fit_transform(xTrain)
 
-  model = LinearRegression()
-  model.fit(x_poly_train, yTrain)
+  poly_reg = LinearRegression()
+  poly_reg.fit(xPolyTrain, yTrain)
 
-  y_pred_train = model.predict(x_poly_train)
-  error_train = mean_absolute_error(yTrain, y_pred_train)
+  xPolyTest = poly_features.fit_transform(xTest)
+  polyPredict = poly_reg.predict(xPolyTest)
+  poly_mse = mean_squared_error(yTest, polyPredict)
+  poly_rmse = np.sqrt(poly_mse)
+  rmses.append(poly_rmse)
 
-  y_pred_test = model.predict(x_poly_test)
-  error_test = mean_absolute_error(yTest, y_pred_test)
-
-  if error_test < min_error:
-    min_error = error_test
-    optimalDegree = degree
+  if min_rmse > poly_rmse:
+    min_rmse = poly_rmse
+    min_deg = degree
 
 print(optimalDegree)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(degrees, rmses)
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('RMSE')
+
 poly = PolynomialFeatures(degree=optimalDegree)
 x_poly_train = poly.fit_transform(x_train_scaler)
 x_poly_test = poly.transform(x_test_scaler)
