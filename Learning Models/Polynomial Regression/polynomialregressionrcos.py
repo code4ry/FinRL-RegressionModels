@@ -13,24 +13,38 @@ from pandas import DataFrame
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
+
 
 import numpy as np
 import math
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
 
 # make sure to chan
 url = 'https://github.com/code4ry/FinRL-RegressionModels/blob/main/Datasets/sandp500.csv'
 data = pd.read_csv('FinRL-RegressionModels\Datasets\dji.csv')
 headers = data.head(0)
+
 print(headers)
+df = df.dropna()
+df = df.dropna(axis=1)
+df= df.dropna(how='all')
+numRows = df.shape[0]
+df['Date'] = pd.to_datetime(df['Date'])
 
-xDate = data[['Date']]
-xOpen = data[['Open']]
-xHigh = data[['High']]
-xLow = data[['Low']]
-xVol = data[['Volume']]
+xDate = df['Date']
+xOpen = df[['Open']]
+xHigh = df[['High']]
+xLow = df[['Low']]
+xVol = df[['Volume']]
+xClose = df[['Close']]
 
-y = data[['Adj Close']]
+
+y = df[['Adj Close']]
 
 #Visualizing open prices to adjusted close price
 plt.scatter(xOpen, y)
@@ -57,10 +71,81 @@ plt.show()
 plt.scatter(xVol, y)
 plt.xlabel('Stock Volume')
 plt.ylabel('Adjusted Close Prices')
-plt.title('Comparison 3')
+plt.title('Comparison 4')
+plt.show()
+
+#Visualizing open price per day
+plt.scatter(xDate, xOpen)
+plt.xlabel('Date')
+plt.ylabel('Opening price')
+plt.title('Comparison 5')
+plt.show()
+
+#Visualizing closing price per day
+plt.scatter(xDate, xClose)
+plt.xlabel('Date')
+plt.ylabel('Closing price')
+plt.title('Comparison 6')
 plt.show()
 
 """After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
-Our models visualizes the stock prices from 2022-01-03 to 2023-12-29.
+Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
 
 """
+
+#Splitting for train test
+X = df[['Open', 'High', 'Low']]
+xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
+
+scaler = StandardScaler()
+x_train_scaler = scaler.fit_transform(xTrain)
+x_test_scaler = scaler.transform(xTest)
+
+lin = LinearRegression()
+
+optimalDegree = 1
+rmses = [];
+degrees = np.arange(1, 60)
+min_rmse, min_deg = 99999999, 0
+
+
+for degree in degrees:
+  poly_features = PolynomialFeatures(degree=degree)
+  xPolyTrain = poly_features.fit_transform(xTrain)
+
+  poly_reg = LinearRegression()
+  poly_reg.fit(xPolyTrain, yTrain)
+
+  xPolyTest = poly_features.fit_transform(xTest)
+  polyPredict = poly_reg.predict(xPolyTest)
+  poly_mse = mean_squared_error(yTest, polyPredict)
+  poly_rmse = np.sqrt(poly_mse)
+  rmses.append(poly_rmse)
+
+  if min_rmse > poly_rmse:
+    min_rmse = poly_rmse
+    min_deg = degree
+
+print(optimalDegree)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(degrees, rmses)
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('RMSE')
+
+poly = PolynomialFeatures(degree=optimalDegree)
+x_poly_train = poly.fit_transform(x_train_scaler)
+x_poly_test = poly.transform(x_test_scaler)
+poly.fit(x_poly_train, yTrain)
+lin.fit(x_poly_train, yTrain)
+
+yPredTrain = lin.predict(x_poly_train)
+meanErrorTrain = mean_absolute_error(yTrain, yPredTrain)
+
+yPredTest = lin.predict(x_poly_test)
+meanErrorTest = mean_absolute_error(yTest, yPredTest)
+
+
+print(meanErrorTrain)
+print(meanErrorTest)
