@@ -136,5 +136,44 @@ yPred_Train = ridge.predict(xTrain)
 mse_test = mean_squared_error(yTest, yPred)
 mse_train = mean_squared_error(yTrain, yPred_Train)
 
-print('MSE Test: ', mse_test)
-print('MSE Train: ', mse_train)
+print('Data Set: S&P 500', 'MSE Test: ', mse_test)
+print('Data Set: S&P 500', 'MSE Train: ', mse_train)
+
+"""
+Back testing for different data set (QQQ)
+"""
+
+df = pd.read_csv("/content/QQQ.csv")
+headers = df.head(0)
+print(headers)
+df = df.dropna()
+df = df.dropna(axis=1)
+df= df.dropna(how='all')
+numRows = df.shape[0]
+
+xDate = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
+xOpen = df[['Open']]
+xHigh = df[['High']]
+xLow = df[['Low']]
+xVol = df[['Volume']]
+xClose = df[['Close']]
+
+y = df[['Adj Close']]
+
+#Splitting for train test
+X = df[['Open', 'High', 'Low']]
+xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
+
+ridge = Ridge(alpha=0.1)
+
+ridge.fit(xTrain, yTrain)
+
+yPred = ridge.predict(xTest)
+yPred_Train = ridge.predict(xTrain)
+
+mse_test = mean_squared_error(yTest, yPred)
+mse_train = mean_squared_error(yTrain, yPred_Train)
+
+#Show cases larger MSE due to more fluctuations in changes of opening, closing, and highest prices
+print('Data Set: QQQ', 'MSE Test: ', mse_test)
+print('Data Set: QQQ', 'MSE Train: ', mse_train)
