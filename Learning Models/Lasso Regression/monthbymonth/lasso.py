@@ -17,12 +17,12 @@ test_data = df[(df['Date'] >= '2023-01-01') & (df['Date'] <= '2023-12-31')]
 # Define time series features
 
 # Slice is a "refrence", make copy instead
-# keep loc and replace val with adj
 def create_features(data):
-    data.loc[:, 'lag_1'] = data['Adj Close'].shift(1)
-    data.loc[:, 'lag_2'] = data['Adj Close'].shift(2)
-    data.loc[:, 'lag_3'] = data['Adj Close'].shift(3)
-    return data.dropna()
+    data_copy = data.copy()
+    data_copy.loc[:, 'lag_1'] = data_copy['Adj Close'].shift(1)
+    data_copy.loc[:, 'lag_2'] = data_copy['Adj Close'].shift(2)
+    data_copy.loc[:, 'lag_3'] = data_copy['Adj Close'].shift(3)
+    return data_copy.dropna()
 
 # Initialize lists to store results
 train_mses = []
