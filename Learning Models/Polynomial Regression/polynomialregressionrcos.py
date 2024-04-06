@@ -152,20 +152,18 @@ meanErrorTest = mean_absolute_error(yTest, yPredTest)
 print(meanErrorTrain)
 print(meanErrorTest)
 
-from sklearn.svm import SVR
+#Splitting for train test
 X2 = df2[['Open', 'High', 'Low']]
 
+xTrain2, xTest2, yTrain2, yTest2 = train_test_split(X2, y2, test_size=0.3, random_state=42)
 
-# Create an instance of SVR
-svm_regressor = SVR()
+x_test_scaler = scaler.transform(xTest2)
+x_poly_test = poly.transform(x_test_scaler)
+poly.fit(x_poly_train, yTrain)
+lin.fit(x_poly_train, yTrain)
 
-# Train the model
-svm_regressor.fit(xTrain, yTrain.values.ravel())  # Use .values.ravel() to convert yTrain to a 1D array
+yPredTrain = lin.predict(x_poly_train)
+meanErrorTrain = mean_absolute_error(yTrain, yPredTrain)
 
-# Test the model
-y_pred = svm_regressor.predict(X2)  # Assuming X2 is your test dataset
-
-mae = mean_absolute_error(y2, y_pred)
-print(mae)
+yPredTest = lin.predict(x_poly_test)
 meanErrorTest = mean_absolute_error(yTest, yPredTest)
-print(meanErrorTest)
