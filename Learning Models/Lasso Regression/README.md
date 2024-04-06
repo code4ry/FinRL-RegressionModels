@@ -17,5 +17,4 @@
    - Calculate Mean Squared Error (MSE) for training and testing predictions.
    - Plot actual vs. predicted adjusted closing scores for testing data to visually assess model performance.
 
-## Example Output
 
