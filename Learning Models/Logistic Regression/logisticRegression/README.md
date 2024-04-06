@@ -29,3 +29,6 @@ ln(pi/(1-pi)) = Beta_0 + Beta_1*X_1 + … + B_k*K_k
 
 03/01: This week, I was able to train test and split my data for building the initial model. However, I am experimenting with pandas Time Series, trying to understand and implement the advantages of using Time Series to train test and split my data. Otherwise, the preparation of my data will need more time.
 
+03/22: This week, I have finished and evaluated the errors in the initial model. I found that the model is experiencing data overfitting, in addition, I have a mean squared error that isn't too desirable. I am researching ways to improve the initial model to make it more accurate, and to hopefully reduce overfitting of data.
+
+03/29: This week, I found a way to best visualize my predicted data along with my actual data from the dataset to show how accurate the prediction model is compared to the actual movement of the actual data. In addition, I discovered cross-validation. Using this, I was able to split my data set into five "folds" to create five different iterations of the train test splitting my data, using 4 folds for training, and 1 fold for testing. Then, gathering all the mean squared errors, I returned an average cross-validation score, which improved the accuracy of the model. 

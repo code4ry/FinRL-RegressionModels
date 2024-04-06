@@ -18,17 +18,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
 
+from sklearn import svm
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
 
 import numpy as np
 import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
-# make sure to chan
-url = 'https://github.com/code4ry/FinRL-RegressionModels/blob/main/Datasets/sandp500.csv'
-data = pd.read_csv('FinRL-RegressionModels\Datasets\dji.csv')
-headers = data.head(0)
-
+df = pd.read_csv("/content/sandp500.csv")
+df2 = pd.read_csv("/content/DJT.csv")
+headers = df.head(0)
 print(headers)
 df = df.dropna()
 df = df.dropna(axis=1)
@@ -45,6 +46,7 @@ xClose = df[['Close']]
 
 
 y = df[['Adj Close']]
+y2 = df2[['Adj Close']]
 
 #Visualizing open prices to adjusted close price
 plt.scatter(xOpen, y)
@@ -95,6 +97,7 @@ Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both d
 
 #Splitting for train test
 X = df[['Open', 'High', 'Low']]
+
 xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
 
 scaler = StandardScaler()
@@ -105,9 +108,8 @@ lin = LinearRegression()
 
 optimalDegree = 1
 rmses = [];
-degrees = np.arange(1, 60)
-min_rmse, min_deg = 99999999, 0
-
+degrees = np.arange(1, 15)
+min_rmse = 9999999999
 
 for degree in degrees:
   poly_features = PolynomialFeatures(degree=degree)
@@ -122,9 +124,9 @@ for degree in degrees:
   poly_rmse = np.sqrt(poly_mse)
   rmses.append(poly_rmse)
 
-  if min_rmse > poly_rmse:
+  if poly_rmse < min_rmse:
     min_rmse = poly_rmse
-    min_deg = degree
+    optimalDegree = degree
 
 print(optimalDegree)
 fig = plt.figure()
@@ -148,4 +150,22 @@ meanErrorTest = mean_absolute_error(yTest, yPredTest)
 
 
 print(meanErrorTrain)
+print(meanErrorTest)
+
+from sklearn.svm import SVR
+X2 = df2[['Open', 'High', 'Low']]
+
+
+# Create an instance of SVR
+svm_regressor = SVR()
+
+# Train the model
+svm_regressor.fit(xTrain, yTrain.values.ravel())  # Use .values.ravel() to convert yTrain to a 1D array
+
+# Test the model
+y_pred = svm_regressor.predict(X2)  # Assuming X2 is your test dataset
+
+mae = mean_absolute_error(y2, y_pred)
+print(mae)
+meanErrorTest = mean_absolute_error(yTest, yPredTest)
 print(meanErrorTest)
