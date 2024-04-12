@@ -177,3 +177,60 @@ mse_train = mean_squared_error(yTrain, yPred_Train)
 #Show cases larger MSE due to more fluctuations in changes of opening, closing, and highest prices
 print('Data Set: QQQ', 'MSE Test: ', mse_test)
 print('Data Set: QQQ', 'MSE Train: ', mse_train)
+
+
+#Testing training of QQQ on DJI data
+#QQQ
+df = pd.read_csv("/content/QQQ.csv")
+headers = df.head(0)
+print(headers)
+df = df.dropna()
+df = df.dropna(axis=1)
+df= df.dropna(how='all')
+numRows = df.shape[0]
+
+xDateQQQ = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
+xOpenQQQ = df[['Open']]
+xHighQQQ = df[['High']]
+xLowQQQ = df[['Low']]
+xVolQQQ = df[['Volume']]
+xCloseQQQ = df[['Close']]
+
+yQQQ = df[['Adj Close']]
+
+XQQQ = df[['Open', 'High', 'Low']]
+xTrainQQQ, xTestQQQ, yTrainQQQ, yTestQQQ = train_test_split(XQQQ, yQQQ, test_size=0.3, random_state=42)
+
+#DJI
+dji = pd.read_csv("/content/^DJI.csv")
+headersDJI = dji.head(0)
+print(headersDJI)
+dji = dji.dropna()
+dji = dji.dropna(axis=1)
+dji= dji.dropna(how='all')
+numRows = dji.shape[0]
+
+xDateDJI = pd.to_datetime(dji['Date'])  # Convert 'Date' column to datetime format
+xOpenDJI = dji[['Open']]
+xHighDJI = dji[['High']]
+xLowDJI = dji[['Low']]
+xVolDJI = dji[['Volume']]
+xCloseDJI = dji[['Close']]
+
+yDJI = dji[['Adj Close']]
+XDJI = dji[['Open', 'High', 'Low']]
+xTrainDJI, xTestDJI, yTrainDJI, yTestDJI = train_test_split(XDJI, yDJI, test_size=0.3, random_state=42)
+
+ridge = Ridge(alpha=0.1)
+
+ridge.fit(xTrainQQQ, yTrainQQQ)
+
+y_test_pred = ridge.predict(xTestDJI)
+
+y_train_pred = ridge.predict(xTrainDJI)
+
+mse_test = mean_squared_error(yTestDJI, y_test_pred)
+mse_train = mean_squared_error(yTrainDJI, y_train_pred)
+
+print('Data Set: QQQ on DJI', 'MSE Test: ', mse_test)
+print('Data Set: QQQ on DJI', 'MSE Train: ', mse_train)
