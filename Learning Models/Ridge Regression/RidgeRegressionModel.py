@@ -32,8 +32,6 @@ stock_dataDJI = stock_dataDJI.dropna()
 stock_dataDJI = stock_dataDJI.dropna(axis=1)
 stock_dataDJI = stock_dataDJI.dropna(how='all')
 
-stock_dataDJI
-
 ## parsing stock market dataset
 stock_datasetSANDP = "sandp500.csv"
 
@@ -43,20 +41,6 @@ stock_dataSANDP = pd.read_csv(stock_datasetSANDP)
 stock_dataSANDP = stock_dataSANDP.dropna()
 stock_dataSANDP = stock_dataSANDP.dropna(axis=1)
 stock_dataSANDP = stock_dataSANDP.dropna(how='all')
-
-stock_dataSANDP
-
-#plotting Open vs Adj Close in DJI
-plt.figure(figsize = (18,9))
-plt.xlabel("Open")
-plt.ylabel("Adjusted Close")
-plt.scatter(stock_dataDJI["Open"], stock_dataDJI["Adj Close"])
-
-#plotting Open vs Adj Close in S&P500
-plt.figure(figsize = (18,9))
-plt.xlabel("Open")
-plt.ylabel("Adjusted Close")
-plt.scatter(stock_dataSANDP["Open"], stock_dataSANDP["Adj Close"])
 
 df = pd.read_csv("/content/sandp500.csv")
 headers = df.head(0)
@@ -122,63 +106,6 @@ After visualizing our data set, we can see that volume stock does not provide a 
 Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
 """
 
-#Splitting for train test
-X = df[['Open', 'High', 'Low']]
-xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
-
-ridge = Ridge(alpha=0.1)
-
-ridge.fit(xTrain, yTrain)
-
-yPred = ridge.predict(xTest)
-yPred_Train = ridge.predict(xTrain)
-
-mse_test = mean_squared_error(yTest, yPred)
-mse_train = mean_squared_error(yTrain, yPred_Train)
-
-print('Data Set: S&P 500', 'MSE Test: ', mse_test)
-print('Data Set: S&P 500', 'MSE Train: ', mse_train)
-
-"""
-Back testing for different data set (QQQ)
-"""
-
-df = pd.read_csv("/content/QQQ.csv")
-headers = df.head(0)
-print(headers)
-df = df.dropna()
-df = df.dropna(axis=1)
-df= df.dropna(how='all')
-numRows = df.shape[0]
-
-xDate = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
-xOpen = df[['Open']]
-xHigh = df[['High']]
-xLow = df[['Low']]
-xVol = df[['Volume']]
-xClose = df[['Close']]
-
-y = df[['Adj Close']]
-
-#Splitting for train test
-X = df[['Open', 'High', 'Low']]
-xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
-
-ridge = Ridge(alpha=0.1)
-
-ridge.fit(xTrain, yTrain)
-
-yPred = ridge.predict(xTest)
-yPred_Train = ridge.predict(xTrain)
-
-mse_test = mean_squared_error(yTest, yPred)
-mse_train = mean_squared_error(yTrain, yPred_Train)
-
-#Show cases larger MSE due to more fluctuations in changes of opening, closing, and highest prices
-print('Data Set: QQQ', 'MSE Test: ', mse_test)
-print('Data Set: QQQ', 'MSE Train: ', mse_train)
-
-
 #Testing training of QQQ on DJI data
 #QQQ
 df = pd.read_csv("/content/QQQ.csv")
@@ -224,13 +151,14 @@ xTrainDJI, xTestDJI, yTrainDJI, yTestDJI = train_test_split(XDJI, yDJI, test_siz
 ridge = Ridge(alpha=0.1)
 
 ridge.fit(xTrainQQQ, yTrainQQQ)
+ridge.fit(xTrainDJI, yTrainDJI)
 
-y_test_pred = ridge.predict(xTestDJI)
+y_test_pred_DJI = ridge.predict(xTestDJI)
 
-y_train_pred = ridge.predict(xTrainDJI)
+y_test_pred_QQQ = ridge.predict(xTestQQQ)
 
-mse_test = mean_squared_error(yTestDJI, y_test_pred)
-mse_train = mean_squared_error(yTrainDJI, y_train_pred)
+mse_test_DJI = mean_squared_error(yTestDJI, y_test_pred_DJI)
+mse_test_QQQ = mean_squared_error(yTestQQQ, y_test_pred_QQQ)
 
-print('Data Set: QQQ on DJI', 'MSE Test: ', mse_test)
-print('Data Set: QQQ on DJI', 'MSE Train: ', mse_train)
+print('Data Set: DJI', 'MSE Test: ', mse_test_DJI)
+print('Data Set: QQQ', 'MSE Test: ', mse_test_QQQ)
