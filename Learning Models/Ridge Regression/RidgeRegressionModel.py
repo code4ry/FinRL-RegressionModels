@@ -128,6 +128,7 @@ yQQQ = df[['Adj Close']]
 XQQQ = df[['Open', 'High', 'Low']]
 xTrainQQQ, xTestQQQ, yTrainQQQ, yTestQQQ = train_test_split(XQQQ, yQQQ, test_size=0.3, random_state=42)
 
+'''
 #DJI
 dji = pd.read_csv("/content/^DJI.csv")
 headersDJI = dji.head(0)
@@ -161,4 +162,43 @@ mse_test_DJI = mean_squared_error(yTestDJI, y_test_pred_DJI)
 mse_test_QQQ = mean_squared_error(yTestQQQ, y_test_pred_QQQ)
 
 print('Data Set: DJI', 'MSE Test: ', mse_test_DJI)
+print('Data Set: QQQ', 'MSE Test: ', mse_test_QQQ)
+'''
+
+#S&P500
+df = pd.read_csv("/content/sandp500.csv")
+headers = df.head(0)
+print(headers)
+df = df.dropna()
+df = df.dropna(axis=1)
+df= df.dropna(how='all')
+numRows = df.shape[0]
+
+xDateSP = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
+xOpenSP = df[['Open']]
+xHighSP = df[['High']]
+xLowSP = df[['Low']]
+xVolSP = df[['Volume']]
+xCloseSP = df[['Close']]
+
+ySP = df[['Adj Close']]
+
+XSP = df[['Open', 'High', 'Low']]
+xTrainSP, xTestSP, yTrainSP, yTestSP = train_test_split(XSP, ySP, test_size=0.3, random_state=42)
+
+ridge = Ridge(alpha=0.1)
+
+ridge.fit(xTrainQQQ, yTrainQQQ)
+ridge.fit(xTrainSP, yTrainSP)
+
+y_test_pred_SP = ridge.predict(xTestSP)
+
+y_test_pred_QQQ = ridge.predict(xTestQQQ)
+
+mse_test_SP = mean_squared_error(yTestSP, y_test_pred_SP)
+mse_test_QQQ = mean_squared_error(yTestQQQ, y_test_pred_QQQ)
+
+#mse_train = mean_squared_error(yTrainDJI, y_train_pred)
+
+print('Data Set: DJI', 'MSE Test: ', mse_test_SP)
 print('Data Set: QQQ', 'MSE Test: ', mse_test_QQQ)
