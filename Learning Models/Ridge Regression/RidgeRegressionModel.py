@@ -16,97 +16,17 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
-
 import numpy as np
 import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
-
-## parsing our stock market dataset
-stock_datasetDJI = "^DJI.csv"
-
-stock_dataDJI = pd.read_csv(stock_datasetDJI)
-
-## removing our null values from the dataset
-stock_dataDJI = stock_dataDJI.dropna()
-stock_dataDJI = stock_dataDJI.dropna(axis=1)
-stock_dataDJI = stock_dataDJI.dropna(how='all')
-
-## parsing stock market dataset
-stock_datasetSANDP = "sandp500.csv"
-
-stock_dataSANDP = pd.read_csv(stock_datasetSANDP)
-
-#removing our null values from the dataset
-stock_dataSANDP = stock_dataSANDP.dropna()
-stock_dataSANDP = stock_dataSANDP.dropna(axis=1)
-stock_dataSANDP = stock_dataSANDP.dropna(how='all')
-
-df = pd.read_csv("/content/sandp500.csv")
-headers = df.head(0)
-print(headers)
-df = df.dropna()
-df = df.dropna(axis=1)
-df= df.dropna(how='all')
-numRows = df.shape[0]
-
-xDate = pd.to_datetime(df['Date'])  # Convert 'Date' column to datetime format
-xOpen = df[['Open']]
-xHigh = df[['High']]
-xLow = df[['Low']]
-xVol = df[['Volume']]
-xClose = df[['Close']]
-
-y = df[['Adj Close']]
-
-#Visualizing open prices to adjusted close price
-plt.scatter(xOpen, y)
-plt.xlabel('Open Prices')
-plt.ylabel('Adjusted Close Prices')
-plt.title('Comparison 1')
-plt.show()
-
-#Visualizing highest prices to adjusted close price
-plt.scatter(xHigh, y)
-plt.xlabel('Highest Prices')
-plt.ylabel('Adjusted Close Prices')
-plt.title('Comparison 2')
-plt.show()
-
-#Visualizing lowest prices to adjusted close price
-plt.scatter(xLow, y)
-plt.xlabel('Lowest Prices')
-plt.ylabel('Adjusted Close Prices')
-plt.title('Comparison 3')
-plt.show()
-
-#Visualizing stock volume to adjusted close price
-plt.scatter(xVol, y)
-plt.xlabel('Stock Volume')
-plt.ylabel('Adjusted Close Prices')
-plt.title('Comparison 4')
-plt.show()
-
-#Visualizing open price per day
-plt.scatter(xDate, xOpen)
-plt.xlabel('Date')
-plt.ylabel('Opening price')
-plt.title('Comparison 5')
-plt.show()
-
-#Visualizing closing price per day
-plt.scatter(xDate, xClose)
-plt.xlabel('Date')
-plt.ylabel('Closing price')
-plt.title('Comparison 6')
-plt.show()
 
 """
 After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
 Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
 """
 
-#Testing training of QQQ on DJI data
+#Testing training of QQQ on S&P500 data
 #QQQ
 df = pd.read_csv("/content/QQQ.csv")
 headers = df.head(0)
@@ -126,44 +46,52 @@ xCloseQQQ = df[['Close']]
 yQQQ = df[['Adj Close']]
 
 XQQQ = df[['Open', 'High', 'Low']]
+
+print("QQQ DATA SET VISUALIZED")
+#Visualizing open prices to adjusted close price
+plt.scatter(xOpenQQQ, yQQQ)
+plt.xlabel('Open Prices')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 1')
+plt.show()
+
+#Visualizing highest prices to adjusted close price
+plt.scatter(xHighQQQ, yQQQ)
+plt.xlabel('Highest Prices')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 2')
+plt.show()
+
+#Visualizing lowest prices to adjusted close price
+plt.scatter(xLowQQQ, yQQQ)
+plt.xlabel('Lowest Prices')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 3')
+plt.show()
+
+#Visualizing stock volume to adjusted close price
+plt.scatter(xVolQQQ, yQQQ)
+plt.xlabel('Stock Volume')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 4')
+plt.show()
+
+#Visualizing open price per day
+plt.scatter(xDateQQQ, xOpenQQQ)
+plt.xlabel('Date')
+plt.ylabel('Opening price')
+plt.title('Comparison 5')
+plt.show()
+
+#Visualizing closing price per day
+plt.scatter(xDateQQQ, xCloseQQQ)
+plt.xlabel('Date')
+plt.ylabel('Closing price')
+plt.title('Comparison 6')
+plt.show()
+
+#Splitting QQQ data
 xTrainQQQ, xTestQQQ, yTrainQQQ, yTestQQQ = train_test_split(XQQQ, yQQQ, test_size=0.3, random_state=42)
-
-'''
-#DJI
-dji = pd.read_csv("/content/^DJI.csv")
-headersDJI = dji.head(0)
-print(headersDJI)
-dji = dji.dropna()
-dji = dji.dropna(axis=1)
-dji= dji.dropna(how='all')
-numRows = dji.shape[0]
-
-xDateDJI = pd.to_datetime(dji['Date'])  # Convert 'Date' column to datetime format
-xOpenDJI = dji[['Open']]
-xHighDJI = dji[['High']]
-xLowDJI = dji[['Low']]
-xVolDJI = dji[['Volume']]
-xCloseDJI = dji[['Close']]
-
-yDJI = dji[['Adj Close']]
-XDJI = dji[['Open', 'High', 'Low']]
-xTrainDJI, xTestDJI, yTrainDJI, yTestDJI = train_test_split(XDJI, yDJI, test_size=0.3, random_state=42)
-
-ridge = Ridge(alpha=0.1)
-
-ridge.fit(xTrainQQQ, yTrainQQQ)
-ridge.fit(xTrainDJI, yTrainDJI)
-
-y_test_pred_DJI = ridge.predict(xTestDJI)
-
-y_test_pred_QQQ = ridge.predict(xTestQQQ)
-
-mse_test_DJI = mean_squared_error(yTestDJI, y_test_pred_DJI)
-mse_test_QQQ = mean_squared_error(yTestQQQ, y_test_pred_QQQ)
-
-print('Data Set: DJI', 'MSE Test: ', mse_test_DJI)
-print('Data Set: QQQ', 'MSE Test: ', mse_test_QQQ)
-'''
 
 #S&P500
 df = pd.read_csv("/content/sandp500.csv")
@@ -184,21 +112,70 @@ xCloseSP = df[['Close']]
 ySP = df[['Adj Close']]
 
 XSP = df[['Open', 'High', 'Low']]
+
+print("S&P500 DATA SET VISUALIZED")
+#Visualizing open prices to adjusted close price
+plt.scatter(xOpenSP, ySP)
+plt.xlabel('Open Prices')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 1')
+plt.show()
+
+#Visualizing highest prices to adjusted close price
+plt.scatter(xHighSP, ySP)
+plt.xlabel('Highest Prices')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 2')
+plt.show()
+
+#Visualizing lowest prices to adjusted close price
+plt.scatter(xLowSP, ySP)
+plt.xlabel('Lowest Prices')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 3')
+plt.show()
+
+#Visualizing stock volume to adjusted close price
+plt.scatter(xVolSP, ySP)
+plt.xlabel('Stock Volume')
+plt.ylabel('Adjusted Close Prices')
+plt.title('Comparison 4')
+plt.show()
+
+#Visualizing open price per day
+plt.scatter(xDateSP, xOpenSP)
+plt.xlabel('Date')
+plt.ylabel('Opening price')
+plt.title('Comparison 5')
+plt.show()
+
+#Visualizing closing price per day
+plt.scatter(xDateSP, xCloseSP)
+plt.xlabel('Date')
+plt.ylabel('Closing price')
+plt.title('Comparison 6')
+plt.show()
+
+#Splitting S&P500 data
 xTrainSP, xTestSP, yTrainSP, yTestSP = train_test_split(XSP, ySP, test_size=0.3, random_state=42)
 
 ridge = Ridge(alpha=0.1)
 
+#Training QQQ data to ridge regression model
 ridge.fit(xTrainQQQ, yTrainQQQ)
+#Retraining model based on S&P500 data
 ridge.fit(xTrainSP, yTrainSP)
 
+#Predicting S&P500 data
 y_test_pred_SP = ridge.predict(xTestSP)
 
+#Predicting QQQ data
 y_test_pred_QQQ = ridge.predict(xTestQQQ)
 
+#Finding the MSE values
 mse_test_SP = mean_squared_error(yTestSP, y_test_pred_SP)
 mse_test_QQQ = mean_squared_error(yTestQQQ, y_test_pred_QQQ)
 
-#mse_train = mean_squared_error(yTrainDJI, y_train_pred)
-
 print('Data Set: DJI', 'MSE Test: ', mse_test_SP)
 print('Data Set: QQQ', 'MSE Test: ', mse_test_QQQ)
+
