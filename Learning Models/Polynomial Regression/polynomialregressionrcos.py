@@ -27,8 +27,11 @@ import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
-df = pd.read_csv("/content/sandp500.csv")
-df2 = pd.read_csv("/content/DJT.csv")
+df1Name = input("What is the name of your first dataset?: ")
+df2Name = input("What is the name of your second dataset?: ")
+df = pd.read_csv("/content/" + df1Name)
+df2 = pd.read_csv("/content/" + df2Name)
+
 headers = df.head(0)
 print(headers)
 df = df.dropna()
@@ -43,7 +46,6 @@ xHigh = df[['High']]
 xLow = df[['Low']]
 xVol = df[['Volume']]
 xClose = df[['Close']]
-
 
 y = df[['Adj Close']]
 y2 = df2[['Adj Close']]
@@ -186,3 +188,68 @@ plt.xlabel("Actual Target Values")
 plt.ylabel("Predicted Target Values")
 plt.title("Actual vs. Predicted (Testing Set)")
 plt.show()
+
+#code to scale features to a similar range, so that we can improve performance
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+minmax_scaler = MinMaxScaler()
+scaler = StandardScaler()
+
+xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
+
+x_train_scaled = minmax_scaler.fit_transform(xTrain)
+x_test_scaled = minmax_scaler.transform(xTest)
+
+lin = LinearRegression()
+
+optimalDegree = 1
+rmses = [];
+degrees = np.arange(1, 15)
+min_rmse = 9999999999
+
+for degree in degrees:
+  poly_features = PolynomialFeatures(degree=degree)
+  xPolyTrain = poly_features.fit_transform(xTrain)
+
+  poly_reg = LinearRegression()
+  poly_reg.fit(xPolyTrain, yTrain)
+
+  xPolyTest = poly_features.fit_transform(xTest)
+  polyPredict = poly_reg.predict(xPolyTest)
+  poly_mse = mean_squared_error(yTest, polyPredict)
+  poly_rmse = np.sqrt(poly_mse)
+  rmses.append(poly_rmse)
+
+  if poly_rmse < min_rmse:
+    min_rmse = poly_rmse
+    optimalDegree = degree
+
+print(optimalDegree)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(degrees, rmses)
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('RMSE')
+plt.show()
+
+poly = PolynomialFeatures(degree=optimalDegree)
+x_poly_train = poly.fit_transform(x_train_scaled)
+x_poly_test = poly.transform(x_test_scaled)
+poly.fit(x_poly_train, yTrain)
+lin.fit(x_poly_train, yTrain)
+
+yPredTrain = lin.predict(x_poly_train)
+meanErrorTrain = mean_absolute_error(yTrain, yPredTrain)
+
+yPredTest = lin.predict(x_poly_test)
+meanErrorTest = mean_absolute_error(yTest, yPredTest)
+
+plt.scatter(yTest, yPredTest)
+plt.xlabel("Actual Target Values")
+plt.ylabel("Predicted Target Values")
+plt.title("Actual vs. Predicted (Testing Set)")
+plt.show()
+
+print(meanErrorTrain)
+print(meanErrorTest)
+
