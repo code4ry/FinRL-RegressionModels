@@ -5,7 +5,7 @@ from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error
 
 # Load dataset
-df = pd.read_csv('FinRL-RegressionModels\Datasets\sandp500.csv')  # Replace 'your_dataset.csv' with the actual filename
+df = pd.read_csv('Learning Models\Lasso Regression\sandp500.csv')  # Replace 'your_dataset.csv' with the actual filename
 
 # Convert 'Date' column to datetime
 df['Date'] = pd.to_datetime(df['Date'])
@@ -32,7 +32,7 @@ X_test = test_data.drop(['Adj Close', 'Date'], axis=1)
 y_test = test_data['Adj Close']
 
 # Define a list of alpha values to test
-alpha_values = np.arange(0.001, 0.1, 0.001)
+alpha_values = np.arange(0.001, 1, 0.001)
 
 # Initialize a dictionary to store results
 alpha_results = {}
