@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 # Load dataset
-df = pd.read_csv('Learning Models/Lasso Regression/sandp500.csv')
+df = pd.read_csv('Learning Models\Lasso Regression\TSLA.csv')
 
 # Convert 'Date' column to datetime
 df['Date'] = pd.to_datetime(df['Date'])
