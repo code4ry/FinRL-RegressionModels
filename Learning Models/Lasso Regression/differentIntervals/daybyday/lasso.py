@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import Lasso
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 import matplotlib.pyplot as plt
 import random
@@ -27,6 +27,7 @@ tscv = TimeSeriesSplit(n_splits=3)
 
 # Initialize lists to store results
 mse_scores = []
+r2_scores = []
 actual_values = []
 predicted_values = []
 test_dates = []
@@ -42,13 +43,13 @@ for train_index, test_index in tscv.split(df_features):
     # Extract features and target variables for testing data
     X_test = test_data.drop(['Adj Close', 'Date'], axis=1)
     y_test = test_data['Adj Close']
-    test_dates.extend(test_data['Date'])  # Capture test dates for plotting
     
     # Generate random alpha values between 0.001 and 0.01
-    alpha_values = [round(random.uniform(0.001, 0.01), 3) for _ in range(5)]  # Generate 5 random alpha values
+    alpha_values = [round(random.uniform(0.001, 1), 3) for _ in range(20)]  # Generate 5 random alpha values
     
     best_alpha = None
     best_mse = float('inf')
+    best_r2 = -float('inf')
     
     # Train Lasso model with different alpha values and select the best one
     for alpha in alpha_values:
@@ -67,17 +68,22 @@ for train_index, test_index in tscv.split(df_features):
     # Predict on testing data
     test_pred = final_lasso.predict(X_test)
 
-    # Calculate MSE on testing data
-    test_mse = mean_squared_error(y_test, test_pred)
-    mse_scores.append(test_mse)
+    # Calculate R-squared (accuracy) on testing data
+    r2 = r2_score(y_test, test_pred)
+    r2_scores.append(r2)
+    
+    # Store results for plotting
     actual_values.extend(y_test)
     predicted_values.extend(test_pred)
-    
+    test_dates.extend(test_data['Date'])  # Extend test_dates with corresponding dates
+
     # Print the final alpha value used for the current split
     print(f"Final Alpha Value for Split: {best_alpha}")
+    print(f"Training MSE: {best_mse}")
+    print(f"Testing R-squared (Accuracy): {r2}")
 
-# Print the average testing MSE across splits
-print(f"Average Testing MSE: {np.mean(mse_scores)}")
+# Print the average testing R-squared (accuracy) across splits
+print(f"Average Testing R-squared (Accuracy): {np.mean(r2_scores)}")
 
 # Plot actual vs predicted for testing data
 plt.figure(figsize=(10, 6))
