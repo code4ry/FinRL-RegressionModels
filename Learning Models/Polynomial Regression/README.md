@@ -16,3 +16,8 @@ would be a polynomial model, a degree of 3 would be a cubic mode, etc.
 2.) We see that our data seems to follow a curved pattern.
 3.) If the Linear Regression Model either fails, or does not accurately capture the data points. 
 
+# When Testing Dataset
+Important for when testing code. The current code I have in vscode is meant to be run in colab. However, if you would like to run this code in vscode, the following changes have to be made. 
+
+df = pd.read_csv("../../Datasets" + df1Name) 
+df2 = pd.read_csv("../../Datasets" + df2Name)
