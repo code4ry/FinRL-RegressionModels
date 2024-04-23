@@ -26,9 +26,12 @@ import numpy as np
 import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
 
-df = pd.read_csv("Datasets\TSLA - Fractional.csv")
-df2 = pd.read_csv("Datasets\TSLA - Fractional.csv")
+df1Name = input("What is the name of your first dataset?: ")
+df2Name = input("What is the name of your second dataset?: ")
+df = pd.read_csv("/content/" + df1Name)
+df2 = pd.read_csv("/content/" + df2Name)
 
 headers = df.head(0)
 print(headers)
@@ -100,6 +103,8 @@ X = df[['Open', 'High', 'Low']]
 
 xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=0.3, random_state=42)
 
+from sklearn.metrics import r2_score
+
 scaler = StandardScaler()
 x_train_scaler = scaler.fit_transform(xTrain)
 x_test_scaler = scaler.transform(xTest)
@@ -157,6 +162,11 @@ plt.show()
 
 print("Train mean error: ", meanErrorTrain)
 print("Test mean error: ", meanErrorTest)
+
+r2_train = r2_score(yTrain, yPredTrain)
+r2_test = r2_score(yTest, yPredTest)
+print("r^2 score train: ", r2_train)
+print("r^2 score test: ", r2_test)
 
 results = pd.DataFrame({'Actual': yTest['Adj Close'].values, 'Predicted': yPredTest.flatten()})
 
