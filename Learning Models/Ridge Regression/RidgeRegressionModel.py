@@ -179,3 +179,54 @@ mse_test_QQQ = mean_squared_error(yTestQQQ, y_test_pred_QQQ)
 print('Data Set: DJI', 'MSE Test: ', mse_test_SP)
 print('Data Set: QQQ', 'MSE Test: ', mse_test_QQQ)
 
+
+#Creating model for Tesla
+df = pd.read_csv("/content/TSLA-Full.csv")
+
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+
+# Ensure no missing values in the dataset
+df.dropna(inplace=True)
+
+# Define features (X) and target variable (y)
+X = df[['Open', 'High', 'Low', 'Volume']]
+y = df['Close']
+
+# Split into train and test sets for time series data
+train_size = int(0.7 * len(df))
+X_train, X_test = X.iloc[:train_size], X.iloc[train_size:]
+y_train, y_test = y.iloc[:train_size], y.iloc[train_size:]
+
+# Scale the features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+search=GridSearchCV(estimator=ridge, param_grid={'alpha':np.logspace(-5,2,8)},scoring='neg_mean_squared_error',n_jobs=1,refit=True,cv=10)
+search.fit(X,y)
+alpha = search.best_params_['alpha']
+
+ridge = Ridge(alpha=.5, random_state=1)
+
+ridge.fit(X_train_scaled, y_train)
+
+y_test_pred = ridge.predict(X_test_scaled)
+y_train_pred = ridge.predict(X_train_scaled)
+
+model_test=(mean_squared_error(y_true=y_test, y_pred=y_test_pred))
+model_train=(mean_squared_error(y_true=y_train, y_pred=y_train_pred))
+
+#Creates graph to showcase actual data vs predicted
+plt.figure(figsize=(10, 6))
+plt.plot(df.index[train_size:], y_test, label='Actual Close', marker='o')
+plt.plot(df.index[train_size:], y_test_pred, label='Predicted Close', linestyle='--')
+plt.xlabel('Date')
+plt.ylabel('Closing Price')
+plt.title('Actual vs. Predicted Closing Prices (Test Data)')
+plt.legend()
+plt.grid(False)
+plt.show()
+
+print(model_test)
+print(model_train)
