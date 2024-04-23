@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import Lasso
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import r2_score
 from sklearn.model_selection import TimeSeriesSplit, cross_val_score
 import matplotlib.pyplot as plt
 import random
 
 # Load dataset
-df = pd.read_csv('Datasets\sandp500.csv')  # Replace 'your_dataset.csv' with the actual filename
+df = pd.read_csv('Datasets\TSLA - Fractional.csv')  # Replace 'your_dataset.csv' with the actual filename
 
 # Convert 'Date' column to datetime
 df['Date'] = pd.to_datetime(df['Date'])

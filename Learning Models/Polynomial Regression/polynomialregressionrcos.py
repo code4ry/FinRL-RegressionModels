@@ -27,10 +27,8 @@ import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
-df1Name = input("What is the name of your first dataset?: ")
-df2Name = input("What is the name of your second dataset?: ")
-df = pd.read_csv("/content/" + df1Name)
-df2 = pd.read_csv("/content/" + df2Name)
+df = pd.read_csv("Datasets\TSLA - Fractional.csv")
+df2 = pd.read_csv("Datasets\TSLA - Fractional.csv")
 
 headers = df.head(0)
 print(headers)
