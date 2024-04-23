@@ -27,8 +27,10 @@ import math
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 
-df = pd.read_csv("Datasets\TSLA - Fractional.csv")
-df2 = pd.read_csv("Datasets\TSLA - Fractional.csv")
+df1Name = input("What is the name of your first dataset?: ")
+df2Name = input("What is the name of your second dataset?: ")
+df = pd.read_csv("/content/" + df1Name)
+df2 = pd.read_csv("/content/" + df2Name)
 
 headers = df.head(0)
 print(headers)
@@ -90,9 +92,9 @@ plt.ylabel('Closing price')
 plt.title('Comparison 6')
 plt.show()
 
-"""
-After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
+"""After visualizing our data set, we can see that volume stock does not provide a meaningful prediction on our adjusted close prices.
 Our models visualizes the stock prices from 2022-01-03 to 2023-12-29, for both data sets.
+
 """
 
 #Splitting for train test
@@ -112,21 +114,21 @@ degrees = np.arange(1, 15)
 min_rmse = 9999999999
 
 for degree in degrees:
-    poly_features = PolynomialFeatures(degree=degree)
-    xPolyTrain = poly_features.fit_transform(xTrain)
+  poly_features = PolynomialFeatures(degree=degree)
+  xPolyTrain = poly_features.fit_transform(xTrain)
 
-    poly_reg = LinearRegression()
-    poly_reg.fit(xPolyTrain, yTrain)
+  poly_reg = LinearRegression()
+  poly_reg.fit(xPolyTrain, yTrain)
 
-    xPolyTest = poly_features.fit_transform(xTest)
-    polyPredict = poly_reg.predict(xPolyTest)
-    poly_mse = mean_squared_error(yTest, polyPredict)
-    poly_rmse = np.sqrt(poly_mse)
-    rmses.append(poly_rmse)
+  xPolyTest = poly_features.fit_transform(xTest)
+  polyPredict = poly_reg.predict(xPolyTest)
+  poly_mse = mean_squared_error(yTest, polyPredict)
+  poly_rmse = np.sqrt(poly_mse)
+  rmses.append(poly_rmse)
 
-    if poly_rmse < min_rmse:
-        min_rmse = poly_rmse
-        optimalDegree = degree
+  if poly_rmse < min_rmse:
+    min_rmse = poly_rmse
+    optimalDegree = degree
 
 print(optimalDegree)
 fig = plt.figure()
@@ -155,8 +157,20 @@ plt.ylabel("Predicted Target Values")
 plt.title("Actual vs. Predicted (Testing Set)")
 plt.show()
 
-print(meanErrorTrain)
-print(meanErrorTest)
+print("Train mean error: ", meanErrorTrain)
+print("Test mean error: ", meanErrorTest)
+
+results = pd.DataFrame({'Actual': yTest['Adj Close'].values, 'Predicted': yPredTest.flatten()})
+
+# Plot actual vs predicted closing prices with different colors
+plt.figure(figsize=(10, 6))
+plt.plot(results.index, results['Actual'], label='Actual', color='blue')
+plt.plot(results.index, results['Predicted'], label='Predicted', color='orange')
+plt.xlabel('Day')
+plt.ylabel('Closing Price')
+plt.title('Actual vs Predicted Closing Prices')
+plt.legend()
+plt.show()
 
 X2 = df2[['Open', 'High', 'Low']]
 
@@ -205,21 +219,21 @@ degrees = np.arange(1, 15)
 min_rmse = 9999999999
 
 for degree in degrees:
-    poly_features = PolynomialFeatures(degree=degree)
-    xPolyTrain = poly_features.fit_transform(xTrain)
+  poly_features = PolynomialFeatures(degree=degree)
+  xPolyTrain = poly_features.fit_transform(xTrain)
 
-    poly_reg = LinearRegression()
-    poly_reg.fit(xPolyTrain, yTrain)
+  poly_reg = LinearRegression()
+  poly_reg.fit(xPolyTrain, yTrain)
 
-    xPolyTest = poly_features.fit_transform(xTest)
-    polyPredict = poly_reg.predict(xPolyTest)
-    poly_mse = mean_squared_error(yTest, polyPredict)
-    poly_rmse = np.sqrt(poly_mse)
-    rmses.append(poly_rmse)
+  xPolyTest = poly_features.fit_transform(xTest)
+  polyPredict = poly_reg.predict(xPolyTest)
+  poly_mse = mean_squared_error(yTest, polyPredict)
+  poly_rmse = np.sqrt(poly_mse)
+  rmses.append(poly_rmse)
 
-    if poly_rmse < min_rmse:
-        min_rmse = poly_rmse
-        optimalDegree = degree
+  if poly_rmse < min_rmse:
+    min_rmse = poly_rmse
+    optimalDegree = degree
 
 print(optimalDegree)
 fig = plt.figure()
@@ -250,3 +264,4 @@ plt.show()
 
 print(meanErrorTrain)
 print(meanErrorTest)
+
