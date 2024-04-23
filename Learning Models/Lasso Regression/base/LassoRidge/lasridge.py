@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split, TimeSeriesSplit
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.linear_model import ElasticNetCV, ElasticNet
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
 
 # Load dataset
-df = pd.read_csv('Learning Models\Lasso Regression\TSLA.csv')
+df = pd.read_csv("Datasets\TSLA - Fractional.csv")
 
 # Convert 'Date' column to datetime and set as index
 df['Date'] = pd.to_datetime(df['Date'])
@@ -65,5 +65,5 @@ plt.xlabel('Date')
 plt.ylabel('Closing Price')
 plt.title('Actual vs. Predicted Closing Prices (Test Data)')
 plt.legend()
-plt.grid(True)
+plt.grid(False)
 plt.show()
