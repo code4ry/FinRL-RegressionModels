@@ -228,5 +228,5 @@ plt.legend()
 plt.grid(False)
 plt.show()
 
-print(model_test)
-print(model_train)
+print('Test MSE: ', model_test)
+print('Training MSE: ', model_train)
