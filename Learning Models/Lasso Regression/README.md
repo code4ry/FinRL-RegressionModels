@@ -1,4 +1,4 @@
-## Organization
+# Organization
 The base sub-folder contains three different sub-folders, they are:
    1. alphaTesting
      - This folder contains a file which simulates and tests what the best possible alpha value is for a given dataset
@@ -7,20 +7,20 @@ The base sub-folder contains three different sub-folders, they are:
    3. LassoRidge
       - This folder contains the final version of my section of the project. This is what was used to derive the data presented for the RCOS Expo.
         
-## Usage
+# Usage
 1. Replace the parameter for line 9 with intended dataset for usage.
 2. Let's say we want to analyze "dji.csv" located in the "Dataset" sub-folder.
 3. Right-click "dji.csv" and select "Copy Relative Path"
 4. This pathing should then be pasted into the parameter for line 9
    4a.  This will look like: df = pd.read_csv("Datasets\dji.csv")  
 
-## Lasso-Ridge Regression Model Explanation and Program Analysis
+# Lasso-Ridge Regression Model Explanation and Program Analysis
 As listed in organization the code for the Lasso-Ridge model is stored in the "LassoRidge" sub-folder.
 
-# Why did I switch from a Lasso Regression model to a Lasso-Ridge Regression Model?
+## Why did I switch from a Lasso Regression model to a Lasso-Ridge Regression Model?
 I switched from a Lasso Regression model to a Lasso-Ridge Regression Model because the latter benefits from regularization methods of both Lasso and Ridge, which helps in producing better model performance by effectively managing overfitting. The Lasso-Ridge model combines the strengths of both techniques, allowing for more flexibility in handling multicollinearity and selecting important features while still controlling model complexity. This shift was particularly useful when dealing with stocks as the Lasso alone was too aggressive in feature selection, which is why there was a need for more nuanced regularization
 
-# Explaining sklearn.ElasticNetCV
+## Explaining sklearn.ElasticNetCV
 The sklearn.ElasticNet is a regression model that combines the L1 and L2 penalties of the Lasso and Ridge methods, respectively. It is useful for variable selection and addressing multicollinearity in linear regression.
 
 Key Parameters:
@@ -37,7 +37,7 @@ Attributes:
    predict(X): Predict using the fitted model.
    score(X, y): Returns the coefficient of determination R^2 of the prediction.
 
-# Program Analysis for "lasridge.py"
+## Program Analysis for "lasridge.py"
 This Python program demonstrates using an ElasticNet regression model to predict stock closing prices based on historical data. Below is a breakdown of the program's steps and functionalities:
 
 This Python program demonstrates using an ElasticNet regression model to predict stock closing prices based on historical data. Below is a breakdown of the program's steps and functionalities:
