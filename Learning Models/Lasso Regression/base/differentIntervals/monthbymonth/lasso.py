@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
 # Load dataset
-df = pd.read_csv('FinRL-RegressionModels\Datasets\sandp500.csv')  # Replace 'your_dataset.csv' with the actual filename
+df = pd.read_csv('Datasets\sandp500.csv') 
 
 # Convert 'Date' column to datetime
 df['Date'] = pd.to_datetime(df['Date'])

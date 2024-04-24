@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import random
 
 # Load dataset
-df = pd.read_csv('Datasets\TSLA - Fractional.csv')  # Replace 'your_dataset.csv' with the actual filename
+df = pd.read_csv('Datasets\TSLA - Fractional.csv') 
 
 # Convert 'Date' column to datetime
 df['Date'] = pd.to_datetime(df['Date'])
