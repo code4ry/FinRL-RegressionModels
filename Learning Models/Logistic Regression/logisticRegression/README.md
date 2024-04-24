@@ -13,6 +13,10 @@ Logit(pi) = 1/(1+ exp(-pi))
 
 ln(pi/(1-pi)) = Beta_0 + Beta_1*X_1 + … + B_k*K_k
 
+**What makes Logistic Regression different from Linear Regression?**
+
+The difference between the Logistic Regression and Linear Regression is that while linear regression is used to identify the relationship between a continuous dependent variable and one or more independent variables, logistic regression identifies the relationship between a categorical dependent variable and one or more independent variables. 
+
 **Milestone 1:**
 
 02/02: I assembled and finalized the people that are in my project group for RCOS. Then, during the RCOS small groups, we completed our project proposal, discussing what our milestones for the project are and assigning different regression models to each team member to work on. In addition, we even found some really good stock market datasets that we can use and standardize throughout the project for the team to use when building out our models. Finally, we were getting our developing environment ready to go to start building our initial models soon. 
