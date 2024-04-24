@@ -1,4 +1,4 @@
-#FinRL-RegressionModels - Bayessian Model
+# FinRL-RegressionModels - Bayessian Model
 Bayesian regression is a statistical modeling technique that extends traditional regression analysis by incorporating Bayesian principles. 
 
 **Tools Utilized**
