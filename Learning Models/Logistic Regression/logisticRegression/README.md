@@ -1,4 +1,4 @@
-# Logistic Regression Model Milestones
+# Logistic Regression Model
 
 **What is Logistic Regression**
 
@@ -16,6 +16,37 @@ ln(pi/(1-pi)) = Beta_0 + Beta_1*X_1 + … + B_k*K_k
 **What makes Logistic Regression different from Linear Regression?**
 
 The difference between the Logistic Regression and Linear Regression is that while linear regression is used to identify the relationship between a continuous dependent variable and one or more independent variables, logistic regression identifies the relationship between a categorical dependent variable and one or more independent variables. 
+
+**Why use Logistic Regression to predict stock market data?**
+
+Since Logistic Regression, commonly binary Logistic Regression, is used for classification, it makes sense that we can use
+predict the fluctuations of the stock market by identifying whether the stock will go up or down in the future. 
+
+**What is the Confusion Matrix for?**
+
+The purpose of creating a confusion matrix for a logistic regression model is to evaluate its performance in a classification task. The confusion matrix provides a structured summary of the model's predictions compared to the actual outcomes. This allows us to determine the model's accuracy. In a confusion matrix, the top left cell (True Positive) represents correct predictions, while the bottom left cell represents incorrect predictions. Having all points on the diagonal (left to right) indicates that the model does not exhibit any False Positives or False Negatives, indicating high performance.
+
+# Logistic Regression Program Analysis
+
+**1. Visualizing Data**
+
+After parsing the CSV files of both the Dow Jones and the S&P 500 data, we organize and clean the data by removing NaN values,
+and creating a tomorrow column to set up target variable column for both datasets.
+
+**2. Create machine learning target**
+
+The target column within both datasets are created by creating a binary value for each day of whether the current
+day's close price is either higher or lower than tomorrow's close price (1 or 0).
+
+**3. Train the model**
+
+Using the Dow Jones dataset, we create a dataframe of the data, making sure to remove all NaN values and do some feature engineering. Once the dataframe is set up, we train the logistic regression model on the Dow Jones data, and then we test the model on the S&P 500 tested data. The train test split is a 80 20 split, where 80% of the data is used for training for data while the other 20% of the other data is used to test the model's prediction, accuracy, and more. 
+
+**4. Evaluate the model**
+
+Once training the model, we want to evaluate the model's accuracy and errors in order to make further improvements on the model. The primary metric used to evaluate the model's accuracy is the Mean Squared Error, which basically measures how accurate the predicted values compared to the actual stock market values. Furthermore, I evaluated the accuracy of the model. Using these metrics, I was able to improve the model by using the cross-validation method over five folds to come to a lower MSE value (which is good) and have a slightly more accurate model.
+
+# Project Milestones
 
 **Milestone 1:**
 
